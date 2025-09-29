@@ -5,20 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="map-title-tag">Explore Map</title>
     
+    <!-- Bootstrap & Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet"> 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"> 
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/SVRQLilf5/A3z47T2JdI="
-        crossorigin=""/>
-    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
     <style>
-        /* मॅप कंटेनरसाठी स्टाईल: याची उंची असणे आवश्यक आहे! */
         #mapid { 
             height: 600px; 
             width: 100%;
-            border: 5px solid var(--sepia-accent);
+            border: 5px solid #a0896b; /* sepia accent color */
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
@@ -26,72 +24,58 @@
 </head>
 <body>
     <div class="container" style="padding-top: 50px; padding-bottom: 50px;">
-        
-        <button id="back-button" class="btn mb-4" style="background: var(--sepia-medium); color: var(--text-primary);">
+        <button id="back-button" class="btn mb-4" style="background: #a0896b; color: #fff;">
             <i class="fas fa-arrow-left me-2"></i>Back to Cities
         </button>
 
         <h2 id="map-header" style="font-family: 'Playfair Display', serif; margin-bottom: 1.5rem;">Loading Map...</h2>
         
         <div id="mapid"></div>
-
     </div>
 
+    <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20n6a32GMQcT/Lg2R3iA8B7+zX6n7+w6C/E/B5j+D3E="
-        crossorigin=""></script>
     
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
-            const place = decodeURIComponent(params.get('place') || '');
-            
+            const place = decodeURIComponent(params.get('place') || 'Maharashtra');
+
             document.getElementById('map-header').textContent = `Interactive Map of Heritage Sites in ${place}`;
             document.getElementById('map-title-tag').textContent = `${place} Map`;
 
-            // Back button functionality
             document.getElementById('back-button').onclick = () => {
                 window.location.href = 'index.html';
             };
 
-            // 🚨 भौगोलिक समन्वय (Coordinates) 🚨
-            let lat = 19.7515; // Maharashtra Default
+            let lat = 19.7515; // Default Maharashtra
             let lon = 75.7139; 
             let zoomLevel = 7;
 
             if (place === 'Mumbai') {
-                lat = 19.0760;
-                lon = 72.8777;
-                zoomLevel = 11;
+                lat = 19.0760; lon = 72.8777; zoomLevel = 11;
             } else if (place === 'Pune') {
-                lat = 18.5204;
-                lon = 73.8567;
-                zoomLevel = 12;
+                lat = 18.5204; lon = 73.8567; zoomLevel = 12;
             } else if (place === 'Chhatrapati Sambhaji Nagar') {
-                lat = 19.8762;
-                lon = 75.3433;
-                zoomLevel = 11;
-            } 
+                lat = 19.8762; lon = 75.3433; zoomLevel = 11;
+            }
 
-            // मॅप सुरू करा (Map initialization)
-            // हे सुनिश्चित करते की #mapid हा घटक (element) अस्तित्वात आहे
-            const mapContainer = document.getElementById('mapid');
-            if (mapContainer && L) { // L (Leaflet object) लोड झाला आहे की नाही ते तपासा.
+            if (typeof L !== 'undefined') {
                 const mymap = L.map('mapid').setView([lat, lon], zoomLevel);
 
-                // OpenStreetMap layer (नकाशाचा बेस)
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(mymap);
 
-                // निवडलेल्या शहरावर मार्कर जोडा 
-                L.marker([lat, lon]).addTo(mymap)
+                L.marker([lat, lon])
+                    .addTo(mymap)
                     .bindPopup(`<b>${place}</b><br>Selected City Center.`)
                     .openPopup();
             } else {
-                 mapContainer.innerHTML = "<p style='color: red;'>Error: Map Library (Leaflet) failed to load or map container not found. Check internet connection and F12 Console.</p>";
+                document.getElementById('mapid').innerHTML = "<p style='color: red; text-align: center;'>Error: Leaflet failed to load. Check internet or CDN.</p>";
             }
         });
     </script>
